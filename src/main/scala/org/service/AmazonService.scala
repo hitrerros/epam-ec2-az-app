@@ -3,7 +3,7 @@ package org.service
 import cats.effect.IO
 
 trait AmazonService {
-  def getAvailabilityZoneAndRegion:  IO[Option[AmazonResponse]]
+  def getAvailabilityZoneAndRegion: IO[Option[AmazonResponse]]
 }
 
 object AmazonService {

@@ -10,8 +10,7 @@ class LiveAmazonService extends AmazonService {
     Try(EC2MetadataUtils.getAvailabilityZone) match {
       case Success(value) =>
         IO.pure(Some(AmazonResponse(value, value.dropRight(1))))
-      case _ =>
-        IO.none
+      case _ => IO.none
     }
   }
 }
