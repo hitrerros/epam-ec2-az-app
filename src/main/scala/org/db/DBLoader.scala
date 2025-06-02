@@ -8,7 +8,8 @@ import slick.jdbc.{JdbcProfile, PostgresProfile}
 object DBLoader {
   def load(profileName: String): PersistenceService = {
 
-    val env = sys.env.getOrElse("APP_ENV", "local") // default to local
+    val env = sys.props.getOrElse("APP_ENV", "local") // default to local
+
     val config = ConfigFactory.load(s"application-$env.conf")
     val rootConfig = ConfigFactory.load(s"application.conf")
 
@@ -19,7 +20,7 @@ object DBLoader {
 
     new PersistenceService {
       override val profile: JdbcProfile = configProfile
-      override val db: Database = Database.forConfig(s"$dbConfigPath.db")
+      override val db: Database = Database.forConfig(s"$dbConfigPath.db",config)
       override val bucket: String = rootConfig.getString("general.bucket_name")
     }
   }

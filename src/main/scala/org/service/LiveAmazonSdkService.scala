@@ -4,8 +4,9 @@ import cats.effect.IO
 import org.db.model.MetadataRecord
 import org.dto.AvailabilityZoneResponse
 import org.service.LiveAmazonSdkService.s3Client
-import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider
+import software.amazon.awssdk.auth.credentials.{DefaultCredentialsProvider, InstanceProfileCredentialsProvider, ProfileCredentialsProvider}
 import software.amazon.awssdk.core.async.{AsyncRequestBody, AsyncResponseTransformer}
+import software.amazon.awssdk.http.nio.netty.NettyNioAsyncHttpClient
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.regions.internal.util.EC2MetadataUtils
 import software.amazon.awssdk.services.s3.S3AsyncClient
@@ -45,7 +46,7 @@ class LiveAmazonSdkService extends AmazonSdkService {
         IO(s3Client.putObject(request, AsyncRequestBody.fromBytes(content)))
       )
       retMetadata <- IO.fromFuture(
-        IO(dbService.uploadMetadatInfoToDB(filename, content))
+        IO(dbService.uploadMetadataInfoToDB(filename, content))
       )
     } yield (retMetadata)
   }
@@ -81,9 +82,11 @@ class LiveAmazonSdkService extends AmazonSdkService {
 }
 
 object LiveAmazonSdkService {
+
   val s3Client: S3AsyncClient = S3AsyncClient
     .builder()
+    .httpClient(NettyNioAsyncHttpClient.builder().build())
     .region(Region.US_WEST_2)
-    .credentialsProvider(ProfileCredentialsProvider.create())
     .build()
+
 }

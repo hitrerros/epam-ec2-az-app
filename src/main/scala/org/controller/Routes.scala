@@ -1,12 +1,15 @@
 package org.controller
 
 import cats.effect.IO
+import play.api.libs.json._
+import org.db.model.MetadataRecord
 import org.http4s.HttpRoutes
 import org.http4s.dsl.io._
 import org.service.AmazonSdkService
 
 object Routes {
   private val amazonSdkservice = implicitly[AmazonSdkService]
+  private implicit val metadataJsonWriter: OWrites[MetadataRecord] = Json.writes[MetadataRecord]
 
   def routes: HttpRoutes[IO] = {
     HttpRoutes.of[IO] {
@@ -25,7 +28,7 @@ object Routes {
           amazonSdkservice
             .uploadFile(filename, fileContent)
             .flatMap {
-              case Some(v) => Ok(v.toString)
+              case Some(v) => Ok(Json.toJson(v).toString())
               case None    => InternalServerError("not found")
             }
         })
@@ -38,14 +41,14 @@ object Routes {
 
       case DELETE -> Root / "files" / filename =>
         amazonSdkservice.deleteFile(filename) flatMap {
-          case true => Ok("done")
+          case true => Ok( s"${filename} deleted")
           case _ => InternalServerError("not content")
         }
 
       case GET -> Root / "info" :? FilenameParam(filename) =>
         amazonSdkservice.showMetadata(filename) flatMap {
-          case Some(v) => Ok(v.toString)
-          case _ => InternalServerError("not content")
+          case Some(v) => Ok(Json.toJson(v).toString())
+          case _ => InternalServerError("file not found")
         }
     }
   }

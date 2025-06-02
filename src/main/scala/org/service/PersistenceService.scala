@@ -19,7 +19,7 @@ trait PersistenceService {
   import dbPostgresService.profile.api._
   private val metadataTab = TableQuery[MetadataTable]
 
-  def uploadMetadatInfoToDB(
+  def uploadMetadataInfoToDB(
       filename: String,
       content: Array[Byte]
   ): Future[Option[MetadataRecord]] = {
