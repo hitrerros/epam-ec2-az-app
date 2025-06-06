@@ -3,8 +3,9 @@ package org.service
 import cats.effect.IO
 import org.db.model.MetadataRecord
 import org.dto.AvailabilityZoneResponse
-import org.service.LiveAmazonSdkService.s3Client
-import software.amazon.awssdk.auth.credentials.{DefaultCredentialsProvider, InstanceProfileCredentialsProvider, ProfileCredentialsProvider}
+import org.service.FileOperationsService.dbService
+import org.service.LiveFileOperationsService.{bucket, s3Client}
+import org.service.configuration.ConfigurationService
 import software.amazon.awssdk.core.async.{AsyncRequestBody, AsyncResponseTransformer}
 import software.amazon.awssdk.http.nio.netty.NettyNioAsyncHttpClient
 import software.amazon.awssdk.regions.Region
@@ -15,9 +16,7 @@ import software.amazon.awssdk.services.s3.model.{DeleteObjectRequest, GetObjectR
 import java.nio.ByteBuffer
 import scala.util.{Success, Try}
 
-class LiveAmazonSdkService extends AmazonSdkService {
-
-  private val dbService: PersistenceService = implicitly[PersistenceService]
+class LiveFileOperationsService extends FileOperationsService {
 
   override def getAvailabilityZoneAndRegion
       : IO[Option[AvailabilityZoneResponse]] = {
@@ -35,7 +34,7 @@ class LiveAmazonSdkService extends AmazonSdkService {
     val request =
       PutObjectRequest
         .builder()
-        .bucket(dbService.bucket)
+        .bucket(bucket)
         .key(filename)
         .contentType("application/octet-stream")
         .contentLength(content.length)
@@ -52,7 +51,7 @@ class LiveAmazonSdkService extends AmazonSdkService {
   }
 
   override def downloadFile(filename: String): IO[Option[Array[Byte]]] = {
-    val request = GetObjectRequest.builder().bucket(dbService.bucket).key(filename).build()
+    val request = GetObjectRequest.builder().bucket(bucket).key(filename).build()
     val futureResponse = s3Client.getObject(request, AsyncResponseTransformer.toBytes[GetObjectResponse]())
 
     IO.fromCompletableFuture(IO(futureResponse)).map { response =>
@@ -64,7 +63,7 @@ class LiveAmazonSdkService extends AmazonSdkService {
   }
 
   override def deleteFile(filename: String): IO[Boolean] = {
-    val request = DeleteObjectRequest.builder().bucket(dbService.bucket).key(filename).build()
+    val request = DeleteObjectRequest.builder().bucket(bucket).key(filename).build()
 
     for {
       lines <- IO.fromFuture(
@@ -81,12 +80,12 @@ class LiveAmazonSdkService extends AmazonSdkService {
   }
 }
 
-object LiveAmazonSdkService {
-
+object LiveFileOperationsService {
   val s3Client: S3AsyncClient = S3AsyncClient
     .builder()
     .httpClient(NettyNioAsyncHttpClient.builder().build())
     .region(Region.US_WEST_2)
     .build()
 
+  val bucket: String = ConfigurationService.bucket
 }

@@ -15,12 +15,14 @@ libraryDependencies ++= Seq(
   "software.amazon.awssdk" % "auth" % "2.25.14",
   "software.amazon.awssdk" % "regions" % "2.25.14",
   "software.amazon.awssdk" % "netty-nio-client" % "2.25.14",
+  "software.amazon.awssdk" % "sqs" % "2.25.14",
   "ch.qos.logback" % "logback-classic" % "1.5.13",
   "com.typesafe.slick" %% "slick" % "3.6.1",
   "com.typesafe.slick" %% "slick-hikaricp" % "3.6.1",
   "org.postgresql" % "postgresql" % "42.7.2",
   "co.fs2" %% "fs2-io" % "3.10.1",
-  "com.typesafe.play" %% "play-json" % "2.10.0-RC9"
+  "com.typesafe.play" %% "play-json" % "2.10.0-RC9",
+  "com.sun.mail" % "jakarta.mail" % "2.0.1"
 )
 
 import sbtassembly.AssemblyPlugin.autoImport.*

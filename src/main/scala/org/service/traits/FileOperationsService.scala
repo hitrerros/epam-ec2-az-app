@@ -4,7 +4,7 @@ import cats.effect.IO
 import org.db.model.MetadataRecord
 import org.dto.AvailabilityZoneResponse
 
-trait AmazonSdkService {
+trait FileOperationsService {
   def getAvailabilityZoneAndRegion: IO[Option[AvailabilityZoneResponse]]
   def uploadFile(filename : String, content : Array[Byte]): IO[Option[MetadataRecord]]
   def downloadFile(filename : String): IO[Option[Array[Byte]]]
@@ -12,6 +12,7 @@ trait AmazonSdkService {
   def showMetadata(filename : Option[String]): IO[Option[MetadataRecord]]
 }
 
-object AmazonSdkService {
-  implicit val sdkService: AmazonSdkService = new LiveAmazonSdkService()
+object FileOperationsService {
+  implicit val sdkService: FileOperationsService = new LiveFileOperationsService()
+   val dbService: PersistenceService = implicitly[PersistenceService]
 }
