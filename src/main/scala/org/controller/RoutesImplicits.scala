@@ -39,7 +39,7 @@ object RoutesImplicits {
       .contramap[A](_.toString)
       .withContentType(`Content-Type`(MediaType.text.plain))
 
-  val amazonSdkservice: FileOperationsService =
+  val amazonSdkService: FileOperationsService =
     implicitly[FileOperationsService]
 
   val sqsOperationsRoutes: SQSOperationsService =

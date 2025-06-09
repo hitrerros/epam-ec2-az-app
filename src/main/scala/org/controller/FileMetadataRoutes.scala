@@ -9,7 +9,7 @@ object FileMetadataRoutes {
 
   def routes: HttpRoutes[IO] = {
     HttpRoutes.of[IO] { case GET -> Root :? OptionalFilenameParam(filename) =>
-      amazonSdkservice.showMetadata(filename) flatMap {
+      amazonSdkService.showMetadata(filename) flatMap {
         case Some(metadata) => Ok(metadata)
         case _              => InternalServerError("file not found")
       }

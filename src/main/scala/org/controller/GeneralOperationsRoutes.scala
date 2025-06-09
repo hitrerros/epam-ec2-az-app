@@ -13,8 +13,8 @@ object GeneralOperationsRoutes {
         Ok("Hey there!")
 
       case GET -> Root / "az" =>
-        amazonSdkservice.getAvailabilityZoneAndRegion flatMap {
-          case Some(v) => Ok(v.region + "," + v.az)
+        amazonSdkService.getAvailabilityZoneAndRegion flatMap {
+          case Some(v) => Ok(v)
           case None    => InternalServerError(s"not found")
         }
     }

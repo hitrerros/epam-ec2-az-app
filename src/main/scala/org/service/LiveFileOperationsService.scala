@@ -6,6 +6,7 @@ import org.dto.AvailabilityZoneResponse
 import org.service.FileOperationsService.dbService
 import org.service.LiveFileOperationsService.{bucket, s3Client}
 import org.service.configuration.ConfigurationService
+import org.service.internal.SQSSendService
 import software.amazon.awssdk.core.async.{AsyncRequestBody, AsyncResponseTransformer}
 import software.amazon.awssdk.http.nio.netty.NettyNioAsyncHttpClient
 import software.amazon.awssdk.regions.Region
@@ -44,11 +45,14 @@ class LiveFileOperationsService extends FileOperationsService {
       _ <- IO.fromCompletableFuture(
         IO(s3Client.putObject(request, AsyncRequestBody.fromBytes(content)))
       )
+
       retMetadata <- IO.fromFuture(
-        IO(dbService.uploadMetadataInfoToDB(filename, content))
-      )
-    } yield (retMetadata)
-  }
+        IO(dbService.uploadMetadataInfoToDB(filename, content)))
+
+      _ <- IO.fromCompletableFuture(IO(SQSSendService.sendMessage(retMetadata.get.toString)))
+      } yield (retMetadata)
+     }
+
 
   override def downloadFile(filename: String): IO[Option[Array[Byte]]] = {
     val request = GetObjectRequest.builder().bucket(bucket).key(filename).build()
