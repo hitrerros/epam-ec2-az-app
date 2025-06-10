@@ -13,7 +13,7 @@ object SQSOperationsRoutes {
         sqsOperationsRoutes.subscribe(mail) flatMap (k =>
           Ok("subscribed!" + k.toString)
         )
-      case GET -> Root / "unsubscribed!" :? ObligatoryMailParam(mail) =>
+      case GET -> Root / "unsubscribe" :? ObligatoryMailParam(mail) =>
         sqsOperationsRoutes.unsubscribe(mail) flatMap { k =>
           Ok("unsubscribed!" + k.toString)
         }

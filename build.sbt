@@ -17,6 +17,7 @@ libraryDependencies ++= Seq(
   "software.amazon.awssdk" % "netty-nio-client" % "2.25.14",
   "software.amazon.awssdk" % "sqs" % "2.25.14",
   "software.amazon.awssdk" % "sns" % "2.25.14",
+  "software.amazon.awssdk" % "auth" % "2.25.14",
   "ch.qos.logback" % "logback-classic" % "1.5.13",
   "com.typesafe.slick" %% "slick" % "3.6.1",
   "com.typesafe.slick" %% "slick-hikaricp" % "3.6.1",
@@ -36,7 +37,6 @@ assembly / mainClass := Some("org.main.AppServer")
 assembly / assemblyMergeStrategy := {
   case PathList("META-INF", "services", xs @ _*) => MergeStrategy.concat
   case PathList("META-INF", xs @ _*) => MergeStrategy.discard
-  case x if x.endsWith(".html")                  => MergeStrategy.discard
   case _ =>
     // For all the other files, use the default sbt-assembly merge strategy
     MergeStrategy.first

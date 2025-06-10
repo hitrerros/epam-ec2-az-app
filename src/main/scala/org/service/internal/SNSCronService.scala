@@ -25,12 +25,15 @@ object SNSCronService {
   private val batchSize: Int = 3
   private val cronExpr : String = ConfigurationService.cronExpr
 
+
+
   private def convertSQSMessageToString(metadataString: String) : String = {
     Json.parse(metadataString).validate[MetadataRecord] match {
        case JsSuccess(record, _) =>
          s"Dear user!\n " +
          s"Image ${record.fileName} has been uploaded\n" +
-         s"size ${record.size}, extension ${record.extension}"
+         s"size ${record.size}, extension ${record.extension}\n" +
+         s"download link: ${AppInfo.getAppUrl}files\\${record.fileName}"
        case JsError(_) => s"Error during image upload ${metadataString}"
      }
   }
@@ -55,7 +58,6 @@ object SNSCronService {
         .map(_.messages().asScala.toList)
 
       _ <- logger.info(s"Fetched ${messages.size} messages from SQS - n" )
-
 
       _ <- messages.traverse_
       { msg =>
