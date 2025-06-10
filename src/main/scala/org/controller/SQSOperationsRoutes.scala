@@ -9,13 +9,13 @@ object SQSOperationsRoutes {
 
   def routes: HttpRoutes[IO] = {
     HttpRoutes.of[IO] {
-      case GET -> Root / "subscribe"  :? ObligatoryMailParam(mail)    =>
-        sqsOperationsRoutes.subscribe(mail) flatMap  {
-          case Some(k)=> Ok("subscribed!")
-        }
-      case GET -> Root / "unsubscribed!"  :? ObligatoryMailParam(mail)    =>
-        sqsOperationsRoutes.unsubscribe(mail) flatMap  {
-          case Some(k)=> Ok("sent!")
+      case GET -> Root / "subscribe" :? ObligatoryMailParam(mail) =>
+        sqsOperationsRoutes.subscribe(mail) flatMap (k =>
+          Ok("subscribed!" + k.toString)
+        )
+      case GET -> Root / "unsubscribed!" :? ObligatoryMailParam(mail) =>
+        sqsOperationsRoutes.unsubscribe(mail) flatMap { k =>
+          Ok("unsubscribed!" + k.toString)
         }
 
     }

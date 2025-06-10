@@ -1,29 +1,31 @@
 package org.service
 
 import cats.effect.IO
-import org.db.model.MailingListRecord
 import org.service.FileOperationsService.dbService
-import org.service.internal.MailService
+import org.service.internal.{MailService, SNSSubscribeService}
 import org.service.traits.SQSOperationsService
+import software.amazon.awssdk.services.sns.model.{SubscribeResponse, UnsubscribeResponse}
 
 class LiveSQSOperationService extends SQSOperationsService {
 
-  override def subscribe(mail: String): IO[Option[MailingListRecord]] = {
-        for {
-      _ <- IO.delay(
-        MailService.sendEmail(mail, "Hello", MailService.subscriptionPath)
-      )
-          lines <- IO.fromFuture(IO(dbService.subscribeAtMailingList(mail)))//
-     } yield Some(MailingListRecord(1,mail))
-  }
-
-  override def unsubscribe(mail: String): IO[Option[MailingListRecord]] = {
+  override def subscribe(mail: String): IO[SubscribeResponse] = {
     for {
       _ <- IO.delay(
-        MailService.sendEmail(mail, "Hello", MailService.unsubscriptionPath)
+        MailService.sendEmail(mail, "Subscription request", MailService.subscriptionPath)
       )
-      lines <- IO.fromFuture(IO(dbService.unsubscribeFromMailingList(mail)))//
-    } yield Some(MailingListRecord(1,mail))
+      response <- SNSSubscribeService.subscribeEmail(mail)
+      _ <- IO.fromFuture(IO(dbService.subscribeAtMailingList(mail))) //
+    } yield response
+  }
+
+  override def unsubscribe(mail: String): IO[UnsubscribeResponse] = {
+    for {
+      _ <- IO.delay(
+        MailService.sendEmail(mail, "Unsubscription request", MailService.unsubscriptionPath)
+      )
+      response <- SNSSubscribeService.unsubscribeEmail(mail)
+      _ <- IO.fromFuture(IO(dbService.unsubscribeFromMailingList(mail))) //
+    } yield response
 
   }
 }

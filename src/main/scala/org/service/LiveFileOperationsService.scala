@@ -41,6 +41,8 @@ class LiveFileOperationsService extends FileOperationsService {
         .contentLength(content.length)
         .build()
 
+    import org.service.configuration.ServiceImplicits._
+
     for {
       _ <- IO.fromCompletableFuture(
         IO(s3Client.putObject(request, AsyncRequestBody.fromBytes(content)))
@@ -49,7 +51,7 @@ class LiveFileOperationsService extends FileOperationsService {
       retMetadata <- IO.fromFuture(
         IO(dbService.uploadMetadataInfoToDB(filename, content)))
 
-      _ <- IO.fromCompletableFuture(IO(SQSSendService.sendMessage(retMetadata.get.toString)))
+      _ <- IO.fromCompletableFuture(IO(SQSSendService.sendMessage(retMetadata.get)))
       } yield (retMetadata)
      }
 
