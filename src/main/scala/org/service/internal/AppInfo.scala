@@ -33,19 +33,19 @@ object AppInfo {
         )
         .build
 
- //   try {
+    try {
       val describeInstancesResponse = ec2.describeInstances(request)
       val instance =
         describeInstancesResponse.reservations().get(0).instances().get(0)
       instance.publicIpAddress
-   // } catch {
-//      case e:  Exception =>
-//        println(e.getMessage)
-//        "N/A"
+    } catch {
+      case e:  Exception =>
+        println(e.getMessage)
+        "N/A"
 
-//    } finally {
-    //    ec2.close()
-//    }
+    } finally {
+        ec2.close()
+    }
 
   }
 }
