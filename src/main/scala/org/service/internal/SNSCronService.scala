@@ -17,25 +17,22 @@ import software.amazon.awssdk.services.sqs.model.{DeleteMessageRequest, ReceiveM
 import java.time.ZonedDateTime
 import scala.jdk.CollectionConverters._
 
-
 object SNSCronService {
 
   private val queueUrl: String = ConfigurationService.queueUrl
   private val topicArn: String = ConfigurationService.snsArn
   private val batchSize: Int = 3
-  private val cronExpr : String = ConfigurationService.cronExpr
+  private val cronExpr: String = ConfigurationService.cronExpr
 
-
-
-  private def convertSQSMessageToString(metadataString: String) : String = {
+  private def convertSQSMessageToString(metadataString: String): String = {
     Json.parse(metadataString).validate[MetadataRecord] match {
-       case JsSuccess(record, _) =>
-         s"Dear user!\n " +
-         s"Image ${record.fileName} has been uploaded\n" +
-         s"size ${record.size}, extension ${record.extension}\n" +
-         s"download link: ${AppInfo.getAppUrl}files\\${record.fileName}"
-       case JsError(_) => s"Error during image upload ${metadataString}"
-     }
+      case JsSuccess(record, _) =>
+        s"Dear user!\n " +
+          s"Image ${record.fileName} has been uploaded\n" +
+          s"size ${record.size}, extension ${record.extension}\n" +
+          s"download link: ${AppInfo.getAppUrl}files\\${record.fileName}"
+      case JsError(_) => s"Error during image upload ${metadataString}"
+    }
   }
 
   def processMessages(
@@ -57,10 +54,9 @@ object SNSCronService {
         .fromCompletableFuture(IO(sqsClient.receiveMessage(receiveRequest)))
         .map(_.messages().asScala.toList)
 
-      _ <- logger.info(s"Fetched ${messages.size} messages from SQS - n" )
+      _ <- logger.info(s"Fetched ${messages.size} messages from SQS - n")
 
-      _ <- messages.traverse_
-      { msg =>
+      _ <- messages.traverse_ { msg =>
         val publishReq = PublishRequest
           .builder()
           .topicArn(topicArn)
@@ -92,10 +88,14 @@ object SNSCronService {
   def cronStream(sqs: SqsAsyncClient, sns: SnsAsyncClient): Stream[IO, Unit] = {
     val evenSeconds = Cron.unsafeParse(cronExpr)
 
-    Cron4sScheduler.systemDefault[IO]
+    Cron4sScheduler
+      .systemDefault[IO]
       .awakeEvery(evenSeconds)
-      .evalMap(_ => processMessages(sqs, sns))
+      .evalMap(_ =>
+        if (ConfigurationService.cronEnabled)
+          processMessages(sqs, sns)
+        else IO.unit
+      )
   }
-
 
 }
