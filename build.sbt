@@ -5,19 +5,21 @@ ThisBuild / scalaVersion := "2.13.16"
 
 val http4sVersion = "0.23.18"
 val http4sBlaze = "0.23.13"
+val awsSdkVersion = "2.25.14"
 
 libraryDependencies ++= Seq(
   "org.http4s" %% "http4s-dsl" % http4sVersion,
   "org.http4s" %% "http4s-blaze-server" % http4sBlaze,
   "org.http4s" %% "http4s-blaze-client" % http4sBlaze,
-  "software.amazon.awssdk" % "ec2" % "2.25.14",
-  "software.amazon.awssdk" % "s3" % "2.25.14",
-  "software.amazon.awssdk" % "auth" % "2.25.14",
-  "software.amazon.awssdk" % "regions" % "2.25.14",
-  "software.amazon.awssdk" % "netty-nio-client" % "2.25.14",
-  "software.amazon.awssdk" % "sqs" % "2.25.14",
-  "software.amazon.awssdk" % "sns" % "2.25.14",
-  "software.amazon.awssdk" % "auth" % "2.25.14",
+  "software.amazon.awssdk" % "ec2" % awsSdkVersion,
+  "software.amazon.awssdk" % "s3" % awsSdkVersion,
+  "software.amazon.awssdk" % "auth" % awsSdkVersion,
+  "software.amazon.awssdk" % "regions" % awsSdkVersion,
+  "software.amazon.awssdk" % "netty-nio-client" % awsSdkVersion,
+  "software.amazon.awssdk" % "sqs" % awsSdkVersion,
+  "software.amazon.awssdk" % "sns" % awsSdkVersion,
+  "software.amazon.awssdk" % "auth" % awsSdkVersion,
+  "software.amazon.awssdk" % "lambda"   % awsSdkVersion,
   "ch.qos.logback" % "logback-classic" % "1.5.13",
   "com.typesafe.slick" %% "slick" % "3.6.1",
   "com.typesafe.slick" %% "slick-hikaricp" % "3.6.1",

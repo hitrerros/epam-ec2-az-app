@@ -3,7 +3,7 @@ package org.main
 import cats.effect.kernel.Resource
 import cats.effect.std.Supervisor
 import cats.effect.{ExitCode, IO, IOApp}
-import org.controller.{FileMetadataRoutes, FileOperationsRoutes, GeneralOperationsRoutes, SQSOperationsRoutes}
+import org.controller._
 import org.http4s.Response.http4sKleisliResponseSyntaxOptionT
 import org.http4s.blaze.server.BlazeServerBuilder
 import org.http4s.server.Router
@@ -19,7 +19,8 @@ object AppServer extends IOApp {
       "/" -> GeneralOperationsRoutes.routes,
       "/files" -> FileOperationsRoutes.routes,
       "/info" -> FileMetadataRoutes.routes,
-      "/queues" -> SQSOperationsRoutes.routes
+      "/queues" -> SQSOperationsRoutes.routes,
+      "/lambda" -> LambdaInvocationRoutes.routes,
     )
 
     val sqsClientResource: Resource[IO, SqsAsyncClient] =

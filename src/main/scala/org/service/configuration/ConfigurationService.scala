@@ -8,7 +8,7 @@ trait ConfigurationService {
   private val rootConfig: Config = ConfigFactory.load(s"application.conf")
 
   val env: String = sys.props.getOrElse("APP_ENV", "local") // default to local
-  val cronEnabled: Boolean = sys.props.getOrElse("CRON_ENABLED", true)
+  val cronEnabled: Boolean = sys.props.getOrElse("CRON_ENABLED", false)
     .toString.toBooleanOption.getOrElse(false)
 
   val bucket: String = rootConfig.getString("general.bucket_name")
