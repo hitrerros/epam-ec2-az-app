@@ -11,7 +11,7 @@ def process_messages(event):
     for record in event['Records']:
         message_body = record['body']
 
-        print(f"Received message: {message_body}")
+        print(f"Received message body: {message_body}")
 
         try:
             data = json.loads(message_body)
