@@ -12,14 +12,17 @@ phases:
       java: corretto17
       python: 3.13
     commands:
+      # Install SBT
+      - echo "Installing SBT for YUM..."
+      - curl -L https://www.scala-sbt.org/sbt-rpm.repo > sbt-rpm.repo
+      - mv sbt-rpm.repo /etc/yum.repos.d/
+      - yum install -y sbt
+      - sbt sbtVersion
+
       #- echo "Installing dependencies with YUM..."
       - yum update -y
       - yum install -y --skip-broken unzip zip
 
-      # Install SBT
-      - curl -L -o sbt.rpm https://github.com/sbt/sbt/releases/download/v1.9.6/sbt-1.9.6.rpm
-      - rpm -ivh sbt.rpm || yum install -y sbt
-      - sbt sbtVersion
 
       # Upgrade pip and install SAM CLI dependencies
       - pip install --upgrade pip
