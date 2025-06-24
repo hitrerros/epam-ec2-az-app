@@ -1,0 +1,61 @@
+version: 0.2
+
+env:
+  variables:
+    S3_BUCKET: anton-khitrov-sam-bucket
+    STACK_NAME: Anton-Khitrov-Sam-CloudFormation
+    REGION: us-west-2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto17
+      python: 3.13
+    commands:
+      - echo "Installing dependencies with YUM..."
+      - yum update -y
+      - yum install -y curl unzip zip
+
+      # Install SBT
+      - curl -L -o sbt.rpm https://github.com/sbt/sbt/releases/download/v1.9.6/sbt-1.9.6.rpm
+      - rpm -ivh sbt.rpm || yum install -y sbt
+      - sbt sbtVersion
+
+      # Upgrade pip and install SAM CLI dependencies
+      - pip install --upgrade pip
+      - pip install awscli
+
+      # Install SAM CLI
+      - curl -Lo sam.zip https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip
+      - unzip sam.zip -d sam-installation
+      - ./sam-installation/install
+      - export PATH=$PATH:/root/.local/bin
+      - sam --version
+
+  build:
+    commands:
+      - echo "🔨 Building Scala fat jar using sbt assembly..."
+      - sbt clean assembly
+      - cd ..
+
+      - echo "📦 Packaging Python Lambda dependencies..."
+      # - cd src/main/lambda
+      - mkdir -p package
+      # - pip install -r requirements.txt -t package/
+      - cp src/main/lambda/uploads_notifications.py package/
+      - cd package
+      - zip -r9 ../lambda-deploy.zip .
+      - cd ..
+
+  post_build:
+    commands:
+      - echo "📦 Packaging SAM application..."
+      - sam package --template-file sam_template.yaml --output-template-file packaged.yaml --s3-bucket $S3_BUCKET --region $REGION
+      - echo "🚀 Deploying SAM application..."
+      # - sam deploy --template-file packaged.yaml --stack-name $STACK_NAME --capabilities CAPABILITY_IAM --region $REGION
+
+artifacts:
+  files:
+    - target/scala-2.13/epam-study-app-0.1.0.jar
+    - lambda-deploy.zip
+  discard-paths: yes

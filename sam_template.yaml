@@ -1,0 +1,94 @@
+# This AWS SAM template has been generated from your function's configuration. If
+# your function has one or more triggers, note that the AWS resources associated
+# with these triggers aren't fully specified in this template and include
+# placeholder values. Open this template in AWS Infrastructure Composer or your
+# favorite IDE and modify it to specify a serverless application with other AWS
+# resources.
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: An AWS Serverless Application Model description for the uploads notifications function
+
+Parameters:
+  ExistingQueueArn:
+    Type: String
+    Default: arn:aws:sqs:us-west-2:151182332702:Anton-Khitrov-UploadsNotificationQueue
+
+Resources:
+  # Failure SNS Topic to collect failed events
+  UploadsNotificationFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: Anton-Khitrov-UploadsNotificationFunction
+      CodeUri: ./src/main/lambda
+      Description: ''
+      MemorySize: 128
+      Timeout: 3
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.13
+      Architectures:
+        - x86_64
+      EphemeralStorage:
+        Size: 512
+      Environment:
+        Variables:
+          DNS_URL: >-
+            http:\\Anton-Khitrov-LoadBalancer-613016074.us-west-2.elb.amazonaws.com
+          SNS_TOPIC_ARN: >-
+            arn:aws:sns:us-west-2:151182332702:Anton-Khitrov-UploadsNotificationTopic
+      RuntimeManagementConfig:
+        UpdateRuntimeOn: Auto
+      PackageType: Zip
+      Policies:
+        - Statement:
+            - Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: arn:aws:logs:*:*:*
+              Effect: Allow
+            - Action:
+                - sns:Publish*
+              Resource:
+                - '*'
+              Effect: Allow
+            - Action:
+                - sqs:ReceiveMessage
+                - sqs:DeleteMessage
+                - sqs:GetQueueAttributes
+              Resource:
+                - '*'
+              Effect: Allow
+            - Sid: Statement1
+              Effect: Allow
+              Action:
+                - s3:ListBucket
+              Resource: arn:aws:s3:::anton-khitrov-app-files
+            - Action:
+                - s3:GetObject
+              Resource: arn:aws:s3:::anton-khitrov-app-files/*
+              Effect: Allow
+            - Sid: Statement2
+              Effect: Allow
+              Action:
+                - rds:*
+                - rds-db:*
+              Resource:
+                - '*'
+            - Sid: Statement3
+              Effect: Allow
+              Action:
+                - ec2:CreateNetworkInterface
+                - ec2:DescribeNetworkInterfaces
+                - ec2:DeleteNetworkInterface
+                - ec2:DescribeSecurityGroups
+                - ec2:DescribeSubnets
+                - ec2:DescribeVpcs
+              Resource: '*'
+      RecursiveLoop: Terminate
+      SnapStart:
+        ApplyOn: None
+      Events:
+        MySQSTrigger:
+          Type: SQS
+          Properties:
+            Queue: !Ref ExistingQueueArn
