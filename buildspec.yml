@@ -20,8 +20,8 @@ phases:
       - sbt sbtVersion
 
       #- echo "Installing dependencies with YUM..."
-      - yum update -y
-      - yum install -y --skip-broken unzip zip
+      # - yum update -y
+      # - yum install -y --skip-broken unzip zip
 
       # Upgrade pip and install SAM CLI dependencies
       # - pip install --upgrade pip
