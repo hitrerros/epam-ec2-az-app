@@ -41,7 +41,8 @@ phases:
       - cd ..
 
       - echo "📦 Packaging Python Lambda dependencies..."
-      # - cd src/main/lambda
+      - cd $CODEBUILD_SRC_DIR
+      - ls -la src/main/
       - mkdir -p package
       # - pip install -r requirements.txt -t package/
       - cp src/main/lambda/upload_notifications.py package/
