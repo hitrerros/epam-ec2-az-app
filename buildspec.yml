@@ -54,7 +54,7 @@ phases:
     commands:
       - echo "📦 Packaging SAM application..."
       - sam package --template-file sam_template.yaml --output-template-file packaged.yaml --s3-bucket $S3_BUCKET --region $REGION
-      - echo "🚀 Deploying SAM application..."
+      # - echo "🚀 Deploying SAM application..."
       # - sam deploy --template-file packaged.yaml --stack-name $STACK_NAME --capabilities CAPABILITY_IAM --region $REGION
 
 artifacts:
