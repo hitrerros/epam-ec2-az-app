@@ -19,14 +19,6 @@ phases:
       - yum install -y sbt
       - sbt sbtVersion
 
-      #- echo "Installing dependencies with YUM..."
-      # - yum update -y
-      # - yum install -y --skip-broken unzip zip
-
-      # Upgrade pip and install SAM CLI dependencies
-      # - pip install --upgrade pip
-      # - pip install awscli
-
       # Install SAM CLI
       - curl -Lo sam.zip https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip
       - unzip -q sam.zip -d sam-installation > /dev/null
@@ -38,17 +30,14 @@ phases:
     commands:
       - echo "🔨 Building Scala fat jar using sbt assembly..."
       - sbt clean assembly
-      - cd ..
 
       - echo "📦 Packaging Python Lambda dependencies..."
       - cd $CODEBUILD_SRC_DIR
       - ls -la src/main/
       - mkdir -p package
-      # - pip install -r requirements.txt -t package/
       - cp src/main/lambda/upload_notifications.py package/
       - cd package
       - zip -r9 ../lambda-deploy.zip .
-      # - cd ..
 
   post_build:
     commands:
@@ -63,4 +52,5 @@ artifacts:
   files:
     - target/scala-2.13/epam-study-app-0.1.0.jar
     - lambda-deploy.zip
+    - packaged.yaml
   discard-paths: yes
