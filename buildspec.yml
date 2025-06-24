@@ -45,7 +45,7 @@ phases:
       # - cd src/main/lambda
       - mkdir -p package
       # - pip install -r requirements.txt -t package/
-      - cp src/main/lambda/uploads_notifications.py package/
+      - cp src/main/lambda/upload_notifications.py package/
       - cd package
       - zip -r9 ../lambda-deploy.zip .
       - cd ..
