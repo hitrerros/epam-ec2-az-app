@@ -31,26 +31,15 @@ phases:
       - echo "🔨 Building Scala fat jar using sbt assembly..."
       - sbt clean assembly
 
-      - echo "📦 Packaging Python Lambda dependencies..."
-      - cd $CODEBUILD_SRC_DIR
-      - ls -la src/main/
-      - mkdir -p package
-      - cp src/main/lambda/upload_notifications.py package/
-      - cd package
-      - zip -r9 ../lambda-deploy.zip .
-
   post_build:
     commands:
       - echo "📦 Packaging SAM application..."
       - cd $CODEBUILD_SRC_DIR
       - pwd
       - sam package --template-file sam_template.yaml --output-template-file packaged.yaml --s3-bucket $S3_BUCKET --region $REGION
-      # - echo "🚀 Deploying SAM application..."
-      # - sam deploy --template-file packaged.yaml --stack-name $STACK_NAME --capabilities CAPABILITY_IAM --region $REGION
 
 artifacts:
   files:
     - target/scala-2.13/epam-study-app-0.1.0.jar
-    - lambda-deploy.zip
     - packaged.yaml
   discard-paths: yes
