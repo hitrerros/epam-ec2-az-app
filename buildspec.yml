@@ -2,7 +2,7 @@ version: 0.2
 
 env:
   variables:
-    S3_BUCKET: anton-khitrov-sam-bucket
+    S3_BUCKET: anton-khitrov-codebuild
     STACK_NAME: Anton-Khitrov-Sam-CloudFormation
     REGION: us-west-2
 
