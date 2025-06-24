@@ -23,14 +23,13 @@ phases:
       - yum update -y
       - yum install -y --skip-broken unzip zip
 
-
       # Upgrade pip and install SAM CLI dependencies
-      - pip install --upgrade pip
+      # - pip install --upgrade pip
       # - pip install awscli
 
       # Install SAM CLI
       - curl -Lo sam.zip https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip
-      - unzip sam.zip -d sam-installation
+      - unzip -q sam.zip -d sam-installation > /dev/null
       - ./sam-installation/install
       - export PATH=$PATH:/root/.local/bin
       - sam --version
@@ -48,11 +47,13 @@ phases:
       - cp src/main/lambda/upload_notifications.py package/
       - cd package
       - zip -r9 ../lambda-deploy.zip .
-      - cd ..
+      # - cd ..
 
   post_build:
     commands:
       - echo "📦 Packaging SAM application..."
+      - cd $CODEBUILD_SRC_DIR
+      - pwd
       - sam package --template-file sam_template.yaml --output-template-file packaged.yaml --s3-bucket $S3_BUCKET --region $REGION
       # - echo "🚀 Deploying SAM application..."
       # - sam deploy --template-file packaged.yaml --stack-name $STACK_NAME --capabilities CAPABILITY_IAM --region $REGION
