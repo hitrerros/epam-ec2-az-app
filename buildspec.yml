@@ -25,19 +25,16 @@ phases:
       - ./sam-installation/install
       - export PATH=$PATH:/root/.local/bin
       - sam --version
-
   build:
     commands:
       - echo "🔨 Building Scala fat jar using sbt assembly..."
       - sbt clean assembly
-
   post_build:
     commands:
       - echo "📦 Packaging SAM application..."
       - cd $CODEBUILD_SRC_DIR
       - pwd
       - sam package --template-file sam_template.yaml --output-template-file packaged.yaml --s3-bucket $S3_BUCKET --region $REGION
-
 artifacts:
   files:
     - target/scala-2.13/epam-study-app-0.1.0.jar
