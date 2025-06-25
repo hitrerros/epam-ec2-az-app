@@ -14,7 +14,6 @@ Parameters:
     Default: arn:aws:sqs:us-west-2:151182332702:Anton-Khitrov-UploadsNotificationQueue
 
 Resources:
-  # Failure SNS Topic to collect failed events
   UploadsNotificationFunction:
     Type: AWS::Serverless::Function
     Properties:
