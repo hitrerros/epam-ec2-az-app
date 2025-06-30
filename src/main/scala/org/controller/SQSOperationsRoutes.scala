@@ -11,11 +11,12 @@ object SQSOperationsRoutes {
     HttpRoutes.of[IO] {
       case GET -> Root / "subscribe" :? ObligatoryMailParam(mail) =>
         sqsOperationsRoutes.subscribe(mail) flatMap (k =>
-          Ok("subscribed!" + k.toString)
+          Ok(s"subscribed ${k.toString}!")
         )
       case GET -> Root / "unsubscribe" :? ObligatoryMailParam(mail) =>
-        sqsOperationsRoutes.unsubscribe(mail) flatMap { k =>
-          Ok("unsubscribed!" + k.toString)
+        sqsOperationsRoutes.unsubscribe(mail) flatMap {
+          case Some(k) =>  Ok(s"unsubscribed ${k.toString}!")
+          case None => InternalServerError("not unsubscribed")
         }
 
     }

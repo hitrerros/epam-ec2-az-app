@@ -18,6 +18,8 @@ trait ConfigurationService {
   val queueUrl : String = rootConfig.getString("general.queue_url")
   val snsArn : String = rootConfig.getString("general.sns_arn")
   val cronExpr : String = rootConfig.getString("general.sns_cron")
+
+  val indexHtmlPath : String = rootConfig.getString("general.index_path")
 }
 
 case class DBConfigurationService(profileName : String) extends ConfigurationService {

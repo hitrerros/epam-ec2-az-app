@@ -6,7 +6,8 @@ import cats.effect.{ExitCode, IO, IOApp}
 import org.controller._
 import org.http4s.Response.http4sKleisliResponseSyntaxOptionT
 import org.http4s.blaze.server.BlazeServerBuilder
-import org.http4s.server.Router
+import org.http4s.server._
+import org.http4s.server.staticcontent._
 import org.service.internal.SNSCronService.cronStream
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.sns.SnsAsyncClient
@@ -21,6 +22,7 @@ object AppServer extends IOApp {
       "/info" -> FileMetadataRoutes.routes,
       "/queues" -> SQSOperationsRoutes.routes,
       "/lambda" -> LambdaInvocationRoutes.routes,
+      "/static" -> resourceServiceBuilder[IO]("/static").toRoutes
     )
 
     val sqsClientResource: Resource[IO, SqsAsyncClient] =

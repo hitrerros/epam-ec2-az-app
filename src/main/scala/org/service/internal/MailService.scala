@@ -1,16 +1,13 @@
 package org.service.internal
 
-import jakarta.mail.internet.{InternetAddress, MimeMessage}
 import jakarta.mail._
+import jakarta.mail.internet.{InternetAddress, MimeMessage}
 import org.service.configuration.ConfigurationService
 
 import java.util.Properties
 import scala.io.Source
 
 object MailService {
-
-  val subscriptionPath = "templates/subscribe.html"
-  val unsubscriptionPath = "templates/unsubscribe.html"
 
   private def renderTemplate(templatePath : String, mail : String) : String = {
     val stream = getClass.getClassLoader.getResourceAsStream(templatePath)

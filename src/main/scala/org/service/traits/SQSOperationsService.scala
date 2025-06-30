@@ -6,7 +6,7 @@ import software.amazon.awssdk.services.sns.model.{SubscribeResponse, Unsubscribe
 
 trait SQSOperationsService {
   def subscribe(mail : String): IO[SubscribeResponse]
-  def unsubscribe(mail : String): IO[UnsubscribeResponse]
+  def unsubscribe(mail : String): IO[Option[UnsubscribeResponse]]
 }
 
 object SQSOperationsService {

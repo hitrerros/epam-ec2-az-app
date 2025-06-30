@@ -7,6 +7,7 @@ import software.amazon.awssdk.services.sns.SnsAsyncClient
 import software.amazon.awssdk.services.sns.model._
 
 import scala.jdk.CollectionConverters.IterableHasAsScala
+import scala.jdk.FutureConverters._
 
 object SNSSubscribeService {
 
@@ -49,16 +50,17 @@ object SNSSubscribeService {
 
   def unsubscribeEmail(
       email: String
-  ): IO[UnsubscribeResponse] = {
+  ): IO[Option[UnsubscribeResponse]] = {
 
     findSubscriptionArnForEmail(email).flatMap {
       case Some(arn) =>
-      val request = UnsubscribeRequest
-        .builder()
-        .subscriptionArn(arn)
-        .build()
-      IO.fromCompletableFuture(IO(snsClient.unsubscribe(request)))
+        val request = UnsubscribeRequest
+          .builder()
+          .subscriptionArn(arn)
+          .build()
+
+        IO(snsClient.unsubscribe(request).asScala.value.flatMap(_.toOption))
+      case None => IO.none
     }
   }
-
 }

@@ -8,7 +8,7 @@ Deployment: CI/CD CodePipeline
 
  The app contains following endpoints groups:
 ```
-  /        - greeting by default
+  /        - management console front-end
   /az      - show region and availability zone
   /files   - file upload/download
   /info    - file metadata information

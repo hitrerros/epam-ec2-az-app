@@ -19,9 +19,7 @@ object AppInfo {
   }
 
   private def determineCloudUrl: String = {
-
     val ec2: Ec2Client = Ec2Client.create
-
     val request: DescribeInstancesRequest =
       DescribeInstancesRequest.builder
         .filters(
@@ -46,6 +44,5 @@ object AppInfo {
     } finally {
         ec2.close()
     }
-
   }
 }

@@ -3,14 +3,15 @@ name := """epam-study-app"""
 ThisBuild / version := "0.1.0"
 ThisBuild / scalaVersion := "2.13.16"
 
-val http4sVersion = "0.23.18"
-val http4sBlaze = "0.23.13"
+val http4sVersion = "0.23.17"
 val awsSdkVersion = "2.25.14"
+val catsEffectVersion   = "3.3.14"
 
 libraryDependencies ++= Seq(
   "org.http4s" %% "http4s-dsl" % http4sVersion,
-  "org.http4s" %% "http4s-blaze-server" % http4sBlaze,
-  "org.http4s" %% "http4s-blaze-client" % http4sBlaze,
+  "org.http4s" %% "http4s-blaze-server" % http4sVersion,
+  "org.http4s" %% "http4s-blaze-client" % http4sVersion,
+  "org.http4s" %% "http4s-server"       % http4sVersion,
   "software.amazon.awssdk" % "ec2" % awsSdkVersion,
   "software.amazon.awssdk" % "s3" % awsSdkVersion,
   "software.amazon.awssdk" % "auth" % awsSdkVersion,
@@ -29,6 +30,7 @@ libraryDependencies ++= Seq(
   "com.sun.mail" % "jakarta.mail" % "2.0.1",
   "eu.timepit" %% "fs2-cron-core" % "0.7.0",
   "eu.timepit" %% "fs2-cron-cron4s" % "0.7.0",
+  "org.typelevel" %% "cats-effect"       % catsEffectVersion
 )
 
 import sbtassembly.AssemblyPlugin.autoImport.*
