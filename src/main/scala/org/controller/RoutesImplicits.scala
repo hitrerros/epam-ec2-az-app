@@ -6,7 +6,7 @@ import org.dto.AvailabilityZoneResponse
 import org.http4s.headers.`Content-Type`
 import org.http4s.{EntityEncoder, MediaType}
 import org.service.FileOperationsService
-import org.service.traits.SQSOperationsService
+import org.service.traits.SNSOperationsService
 import play.api.libs.json.Json
 
 import scala.language.implicitConversions
@@ -42,7 +42,7 @@ object RoutesImplicits {
   val amazonSdkService: FileOperationsService =
     implicitly[FileOperationsService]
 
-  val sqsOperationsRoutes: SQSOperationsService =
-    implicitly[SQSOperationsService]
+  val sqsOperationsRoutes: SNSOperationsService =
+    implicitly[SNSOperationsService]
 
 }

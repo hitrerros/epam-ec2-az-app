@@ -1,14 +1,14 @@
 package org.service.traits
 
 import cats.effect.IO
-import org.service.LiveSQSOperationService
+import org.service.LiveSNSOperationService
 import software.amazon.awssdk.services.sns.model.{SubscribeResponse, UnsubscribeResponse}
 
-trait SQSOperationsService {
+trait SNSOperationsService {
   def subscribe(mail : String): IO[SubscribeResponse]
   def unsubscribe(mail : String): IO[Option[UnsubscribeResponse]]
 }
 
-object SQSOperationsService {
-  implicit val SQSOperationsService: SQSOperationsService = new LiveSQSOperationService()
+object SNSOperationsService {
+  implicit val SNSOperationsService: SNSOperationsService = new LiveSNSOperationService()
 }

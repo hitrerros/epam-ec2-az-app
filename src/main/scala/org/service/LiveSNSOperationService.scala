@@ -3,10 +3,10 @@ package org.service
 import cats.effect.IO
 import org.service.FileOperationsService.dbService
 import org.service.internal.SNSSubscribeService
-import org.service.traits.SQSOperationsService
+import org.service.traits.SNSOperationsService
 import software.amazon.awssdk.services.sns.model.{SubscribeResponse, UnsubscribeResponse}
 
-class LiveSQSOperationService extends SQSOperationsService {
+class LiveSNSOperationService extends SNSOperationsService {
 
   override def subscribe(mail: String): IO[SubscribeResponse] = {
     for {

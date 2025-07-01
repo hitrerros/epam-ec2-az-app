@@ -53,11 +53,12 @@ object SNSSubscribeService {
   ): IO[Option[UnsubscribeResponse]] = {
 
     findSubscriptionArnForEmail(email).flatMap {
-      case Some(arn) =>
+      case Some(arn)  =>
         val request = UnsubscribeRequest
           .builder()
           .subscriptionArn(arn)
           .build()
+
 
         IO(snsClient.unsubscribe(request).asScala.value.flatMap(_.toOption))
       case None => IO.none
