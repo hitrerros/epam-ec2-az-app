@@ -23,4 +23,4 @@ CMD java  -DAPP_ENV=cloud -DRDS_ENDPOINT=$RDS_URL \
          				  -DSQS_URL=$SQS_URL \
          				  -DSNS_ARN=$SNS_ARN \
          				  -DRDS_DB=metaws    \
-         				  -jar epam-study-app-0.1.0.jar
+         				  -jar app.jar

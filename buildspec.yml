@@ -56,6 +56,6 @@ phases:
 
 artifacts:
   files:
-    #  - target/scala-2.13/epam-study-app-0.1.0.jar
+    - target/scala-2.13/epam-study-app-0.1.0.jar
     - packaged.yaml
   discard-paths: yes
