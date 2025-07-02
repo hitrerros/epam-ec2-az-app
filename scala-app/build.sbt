@@ -20,6 +20,7 @@ libraryDependencies ++= Seq(
   "software.amazon.awssdk" % "sqs" % awsSdkVersion,
   "software.amazon.awssdk" % "sns" % awsSdkVersion,
   "software.amazon.awssdk" % "auth" % awsSdkVersion,
+  "software.amazon.awssdk" % "dynamodb"   % awsSdkVersion,
   "software.amazon.awssdk" % "lambda"   % awsSdkVersion,
   "ch.qos.logback" % "logback-classic" % "1.5.13",
   "com.typesafe.slick" %% "slick" % "3.6.1",

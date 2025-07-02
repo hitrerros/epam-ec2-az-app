@@ -5,7 +5,7 @@ import org.db.model.MetadataRecord
 import org.dto.AvailabilityZoneResponse
 import org.service.LiveFileOperationsService.{bucket, s3Client}
 import org.service.configuration.ConfigurationService
-import org.service.internal.SQSSendService
+import org.service.internal.{DynamoDBService, SQSSendService}
 import org.service.traits.FileOperationsService
 import org.service.traits.FileOperationsService.dbService
 import software.amazon.awssdk.core.async.{AsyncRequestBody, AsyncResponseTransformer}
@@ -15,7 +15,6 @@ import software.amazon.awssdk.regions.internal.util.EC2MetadataUtils
 import software.amazon.awssdk.services.s3.S3AsyncClient
 import software.amazon.awssdk.services.s3.model.{DeleteObjectRequest, GetObjectRequest, GetObjectResponse, PutObjectRequest}
 
-import java.nio.ByteBuffer
 import scala.util.{Success, Try}
 
 class LiveFileOperationsService extends FileOperationsService {
@@ -61,12 +60,18 @@ class LiveFileOperationsService extends FileOperationsService {
     val request = GetObjectRequest.builder().bucket(bucket).key(filename).build()
     val futureResponse = s3Client.getObject(request, AsyncResponseTransformer.toBytes[GetObjectResponse]())
 
-    IO.fromCompletableFuture(IO(futureResponse)).map { response =>
-      val byteBuffer: ByteBuffer = response.asByteBuffer()
-      val bytes = new Array[Byte](byteBuffer.remaining())
-      byteBuffer.get(bytes)
-      Some(bytes)
-    }.recover { case _ => None }
+    val result: IO[Option[Array[Byte]]] = for {
+      _ <-  DynamoDBService.updateCount(filename,"download_count")
+      response <- IO.fromCompletableFuture(IO(futureResponse))
+      byteBuffer = response.asByteBuffer()
+      bytes = {
+        val arr = new Array[Byte](byteBuffer.remaining())
+        byteBuffer.get(arr)
+        arr
+      }
+    } yield Some(bytes)
+
+     result.recover { case _ => None }
   }
 
   override def deleteFile(filename: String): IO[Boolean] = {
@@ -83,7 +88,10 @@ class LiveFileOperationsService extends FileOperationsService {
   }
 
   override def showMetadata(filename: Option[String]): IO[Option[MetadataRecord]] = {
-    IO.fromFuture(IO(dbService.showMetadata(filename)))
+    for {
+       _ <- DynamoDBService.updateCount(filename.get,"view_count")
+       resp <- IO.fromFuture(IO(dbService.showMetadata(filename)))
+    } yield resp
   }
 }
 
