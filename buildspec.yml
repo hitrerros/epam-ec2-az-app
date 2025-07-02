@@ -38,6 +38,8 @@ phases:
 
   build:
     commands:
+      - echo "Creating dummy.txt for primary artifact..."
+      - echo "Primary artifact placeholder" > dummy.txt
       - echo "🔨 Building Scala fat jar using sbt assembly..."
       - cd $CODEBUILD_SRC_DIR/scala-app
       - sbt clean assembly
@@ -61,6 +63,8 @@ phases:
       - sam package --template-file sam_template.yaml --output-template-file packaged.yaml --s3-bucket $S3_BUCKET --region $REGION
 
 artifacts:
+  files:
+    - dummy.txt
   secondary-artifacts:
     ecsArtifact:
       base-directory: .
