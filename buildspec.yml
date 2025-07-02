@@ -36,12 +36,14 @@ phases:
   build:
     commands:
       - echo "🔨 Building Scala fat jar using sbt assembly..."
-      - cd ./scala-app
+      - cd $CODEBUILD_SRC_DIR/scala-app
       - sbt clean assembly
+
       - echo Build started on `date`
       - echo Building the Docker image...
       - docker build -t $ECR_REPO_NAME:$IMAGE_TAG .
       - docker tag $ECR_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$ECR_REPO_NAME:$IMAGE_TAG
+
       - echo Build completed on `date`
       - echo Pushing the Docker image...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$ECR_REPO_NAME:$IMAGE_TAG
@@ -49,12 +51,12 @@ phases:
   post_build:
     commands:
       - echo "📦 Packaging SAM application..."
-      - cd ./lambda
+      - cd $CODEBUILD_SRC_DIR/lambda
       - pwd
       - sam package --template-file sam_template.yaml --output-template-file packaged.yaml --s3-bucket $S3_BUCKET --region $REGION
 
 artifacts:
   files:
-    - scala_app/target/scala-2.13/epam-study-app-0.1.0.jar
-    - lambda/packaged.yaml
+    - $CODEBUILD_SRC_DIR/scala_app/target/scala-2.13/epam-study-app-0.1.0.jar
+    - $CODEBUILD_SRC_DIR/lambda/packaged.yaml
   discard-paths: yes
