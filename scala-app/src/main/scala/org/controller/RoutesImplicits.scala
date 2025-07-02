@@ -5,8 +5,7 @@ import org.db.model.MetadataRecord
 import org.dto.AvailabilityZoneResponse
 import org.http4s.headers.`Content-Type`
 import org.http4s.{EntityEncoder, MediaType}
-import org.service.FileOperationsService
-import org.service.traits.SNSOperationsService
+import org.service.traits.{FileOperationsService, SNSOperationsService}
 import play.api.libs.json.Json
 
 import scala.language.implicitConversions

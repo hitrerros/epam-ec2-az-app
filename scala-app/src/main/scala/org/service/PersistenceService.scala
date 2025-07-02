@@ -1,12 +1,7 @@
 package org.service
 
 import org.db.DBLoader
-import org.db.model.{
-  MailingListRecord,
-  MailingListTable,
-  MetadataRecord,
-  MetadataTable
-}
+import org.db.model._
 import org.service.PersistenceService.dbPostgresService
 import slick.jdbc.JdbcBackend.Database
 import slick.jdbc.JdbcProfile
