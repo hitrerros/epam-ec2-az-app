@@ -16,7 +16,7 @@ WORKDIR /app
 COPY ../target/scala-2.13/aws-scala-app-0.1.0.jar app.jar
 
 # Expose port if needed
-EXPOSE 8080
+EXPOSE 80
 
 CMD java  -DAPP_ENV=cloud -DRDS_ENDPOINT=$RDS_URL \
          				  -DDB_PASSWORD=$DB_PASSWORD \
