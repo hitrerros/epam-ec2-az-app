@@ -55,7 +55,7 @@ phases:
 
       - echo Creating imagedefinitions.json...
       - |
-        printf '[{"name":"%s","imageUri":"%s"}]' "$ECS_CONTAINER_NAME" "$REPO_URI:$IMAGE_TAG" > imagedefinitions.json
+        printf '[{"name":"%s","imageUri":"%s"}]' "$ECS_CONTAINER_NAME" "$REPO_URI:$IMAGE_TAG" > $CODEBUILD_SRC_DIR/imagedefinitions.json
 
       - echo "📦 Packaging SAM application..."
       - cd $CODEBUILD_SRC_DIR/lambda
