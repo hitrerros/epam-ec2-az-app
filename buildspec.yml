@@ -28,12 +28,14 @@ phases:
       - ./sam-installation/install
       - export PATH=$PATH:/root/.local/bin
       - sam --version
+
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
       - AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-      - REPO_URI=$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$ECR_REPO_NAME
+      - REPO_URI=$AWS_ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$ECR_REPO_NAME
       - aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com
+
   build:
     commands:
       - echo "🔨 Building Scala fat jar using sbt assembly..."
@@ -53,17 +55,22 @@ phases:
       - |
         printf '[{"name":"%s","imageUri":"%s"}]' "$ECS_CONTAINER_NAME" "$REPO_URI:$IMAGE_TAG" > imagedefinitions.json
 
-
-
-  post_build:
-    commands:
       - echo "📦 Packaging SAM application..."
       - cd $CODEBUILD_SRC_DIR/lambda
       - pwd
       - sam package --template-file sam_template.yaml --output-template-file packaged.yaml --s3-bucket $S3_BUCKET --region $REGION
 
 artifacts:
-  files:
-    - $CODEBUILD_SRC_DIR/scala_app/target/scala-2.13/aws-scala-app-0.1.0.jar
-    - $CODEBUILD_SRC_DIR/lambda/packaged.yaml
-  discard-paths: yes
+  secondary-artifacts:
+    ecsArtifact:
+      base-directory: .
+      files:
+        - imagedefinitions.json
+    lambdaArtifact:
+      base-directory: $CODEBUILD_SRC_DIR/lambda
+      files:
+        - packaged.yaml
+    jarArtifact:
+      base-directory: $CODEBUILD_SRC_DIR/scala-app/target/scala-2.13
+      files:
+        - aws-scala-app-0.1.0.jar
