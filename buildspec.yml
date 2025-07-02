@@ -57,6 +57,6 @@ phases:
 
 artifacts:
   files:
-    - $CODEBUILD_SRC_DIR/scala_app/target/scala-2.13/epam-study-app-0.1.0.jar
+    - $CODEBUILD_SRC_DIR/scala_app/target/scala-2.13/aws-scala-app-0.1.0.jar
     - $CODEBUILD_SRC_DIR/lambda/packaged.yaml
   discard-paths: yes
