@@ -3,10 +3,11 @@ package org.service
 import cats.effect.IO
 import org.db.model.MetadataRecord
 import org.dto.AvailabilityZoneResponse
-import org.service.FileOperationsService.dbService
 import org.service.LiveFileOperationsService.{bucket, s3Client}
 import org.service.configuration.ConfigurationService
 import org.service.internal.SQSSendService
+import org.service.traits.FileOperationsService
+import org.service.traits.FileOperationsService.dbService
 import software.amazon.awssdk.core.async.{AsyncRequestBody, AsyncResponseTransformer}
 import software.amazon.awssdk.http.nio.netty.NettyNioAsyncHttpClient
 import software.amazon.awssdk.regions.Region

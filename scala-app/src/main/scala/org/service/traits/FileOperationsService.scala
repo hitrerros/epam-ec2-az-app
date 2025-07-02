@@ -1,8 +1,9 @@
-package org.service
+package org.service.traits
 
 import cats.effect.IO
 import org.db.model.MetadataRecord
 import org.dto.AvailabilityZoneResponse
+import org.service.{LiveFileOperationsService, PersistenceService}
 
 trait FileOperationsService {
   def getAvailabilityZoneAndRegion: IO[Option[AvailabilityZoneResponse]]

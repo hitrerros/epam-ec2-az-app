@@ -1,8 +1,8 @@
 package org.service
 
 import cats.effect.IO
-import org.service.FileOperationsService.dbService
 import org.service.internal.SNSSubscribeService
+import org.service.traits.FileOperationsService.dbService
 import org.service.traits.SNSOperationsService
 import software.amazon.awssdk.services.sns.model.{SubscribeResponse, UnsubscribeResponse}
 

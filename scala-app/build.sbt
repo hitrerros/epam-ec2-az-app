@@ -1,4 +1,4 @@
-name := """epam-study-app"""
+name := """aws-scala-app"""
 
 ThisBuild / version := "0.1.0"
 ThisBuild / scalaVersion := "2.13.16"
@@ -32,8 +32,6 @@ libraryDependencies ++= Seq(
   "eu.timepit" %% "fs2-cron-cron4s" % "0.7.0",
   "org.typelevel" %% "cats-effect"       % catsEffectVersion
 )
-
-import sbtassembly.AssemblyPlugin.autoImport.*
 
 assembly / assemblyJarName := s"${name.value}-${version.value}.jar"
 assembly / mainClass := Some("org.main.AppServer")

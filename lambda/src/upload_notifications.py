@@ -1,4 +1,6 @@
-import boto3,json, os
+import boto3
+import json
+import os
 
 SNS_TOPIC_ARN = os.environ['SNS_TOPIC_ARN']
 DNS_URL       = os.environ['DNS_URL']
