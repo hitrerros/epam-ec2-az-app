@@ -13,7 +13,7 @@ ENV PATH="$JAVA_HOME/bin:$PATH"
 WORKDIR /app
 
 # Copy fat jar
-COPY ../target/scala-2.13/epam-study-app-0.1.0.jar app.jar
+COPY ../target/scala-2.13/aws-scala-app-0.1.0.jar app.jar
 
 # Expose port if needed
 EXPOSE 8080
