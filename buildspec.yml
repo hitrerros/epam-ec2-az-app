@@ -7,6 +7,7 @@ env:
     REGION: us-west-2
     ECR_REPO_NAME: anton-khitrov/final-app
     IMAGE_TAG: latest
+    ECS_CONTAINER_NAME: anton-khitrov-app
 
 phases:
   install:
@@ -47,6 +48,12 @@ phases:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$ECR_REPO_NAME:$IMAGE_TAG
+
+      - echo Creating imagedefinitions.json...
+      - |
+        printf '[{"name":"%s","imageUri":"%s"}]' "$ECS_CONTAINER_NAME" "$REPO_URI:$IMAGE_TAG" > imagedefinitions.json
+
+
 
   post_build:
     commands:
