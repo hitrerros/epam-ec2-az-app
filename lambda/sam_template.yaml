@@ -22,7 +22,7 @@ Resources:
       Description: 'Anton Khitrov Uploads notification Lambda function'
       MemorySize: 128
       Timeout: 3
-      Handler: lambda_function.lambda_handler
+      Handler: upload_notifications.lambda_handler
       Runtime: python3.13
       AutoPublishAlias: prod
       DeploymentPreference:
@@ -93,4 +93,4 @@ Resources:
         MySQSTrigger:
           Type: SQS
           Properties:
-            Queue: !Sub "${ExistingQueueArn}"
+            Queue: arn:aws:sqs:us-west-2:151182332702:Anton-Khitrov-UploadsNotificationQueue
