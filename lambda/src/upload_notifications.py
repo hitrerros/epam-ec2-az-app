@@ -29,7 +29,7 @@ def process_messages(event):
 
         File {file_name} has been uploaded.
         Metadata: name {file_name}, extension {extension}, size {size}
-        Download link: ${download_url}
+        Download link: {download_url}
         """
 
         response = sns_client.publish(
