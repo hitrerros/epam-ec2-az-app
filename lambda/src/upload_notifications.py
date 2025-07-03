@@ -23,12 +23,13 @@ def process_messages(event):
         extension = data.get('extension')
         size = data.get('size')
 
+        download_url = f"{DNS_URL}/files/{file_name}"
         message_text = f"""
         Dear user!
 
         File {file_name} has been uploaded.
         Metadata: name {file_name}, extension {extension}, size {size}
-        Download link: {DNS_URL}\\files\\{file_name}
+        Download link: ${download_url}
         """
 
         response = sns_client.publish(

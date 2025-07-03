@@ -34,7 +34,7 @@ Resources:
       Environment:
         Variables:
           DNS_URL: >-
-            http:\\Anton-Khitrov-LoadBalancer-613016074.us-west-2.elb.amazonaws.com
+            http://anton-khitrov-loadbalancer-ecs-881400187.us-west-2.elb.amazonaws.com
           SNS_TOPIC_ARN: >-
             arn:aws:sns:us-west-2:151182332702:Anton-Khitrov-UploadsNotificationTopic
       RuntimeManagementConfig:
@@ -93,4 +93,4 @@ Resources:
         MySQSTrigger:
           Type: SQS
           Properties:
-            Queue: !Ref ExistingQueueArn
+            Queue: !Sub "${ExistingQueueArn}"
