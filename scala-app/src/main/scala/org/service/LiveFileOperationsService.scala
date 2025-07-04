@@ -64,16 +64,12 @@ class LiveFileOperationsService extends FileOperationsService {
     val request = GetObjectRequest.builder().bucket(bucket).key(filename).build()
     val futureResponse = s3Client.getObject(request, AsyncResponseTransformer.toBytes[GetObjectResponse]())
 
-    val statisticsEffect : IO[UpdateItemResponse] =  DynamoDBService.updateCount(filename,"download_count")
-
-    val downloadEffect = IO.fromCompletableFuture(IO(futureResponse)).map { response =>
-      val byteBuffer: ByteBuffer = response.asByteBuffer()
-      val bytes = new Array[Byte](byteBuffer.remaining())
-      byteBuffer.get(bytes)
-      Some(bytes)
+    val statisticsIO : IO[UpdateItemResponse] =  DynamoDBService.updateCount(filename,"download_count")
+    val downloadIO = IO.fromCompletableFuture(IO(futureResponse)).map { response =>
+      Some(new Array[Byte](response.asByteBuffer().remaining()))
     }.recover { case _ => None }
 
-    (statisticsEffect,downloadEffect).parTupled.map{case (_,a) => a}
+    (statisticsIO,downloadIO).parTupled.map{case (_,a) => a}
   }
 
   override def deleteFile(filename: String): IO[Boolean] = {
