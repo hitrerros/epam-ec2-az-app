@@ -1,6 +1,8 @@
 package org.service
 
 import cats.effect.IO
+import cats.syntax.parallel._
+
 import org.db.model.MetadataRecord
 import org.dto.AvailabilityZoneResponse
 import org.service.LiveFileOperationsService.{bucket, s3Client}
@@ -12,9 +14,11 @@ import software.amazon.awssdk.core.async.{AsyncRequestBody, AsyncResponseTransfo
 import software.amazon.awssdk.http.nio.netty.NettyNioAsyncHttpClient
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.regions.internal.util.EC2MetadataUtils
+import software.amazon.awssdk.services.dynamodb.model.UpdateItemResponse
 import software.amazon.awssdk.services.s3.S3AsyncClient
 import software.amazon.awssdk.services.s3.model.{DeleteObjectRequest, GetObjectRequest, GetObjectResponse, PutObjectRequest}
 
+import java.nio.ByteBuffer
 import scala.util.{Success, Try}
 
 class LiveFileOperationsService extends FileOperationsService {
@@ -60,18 +64,16 @@ class LiveFileOperationsService extends FileOperationsService {
     val request = GetObjectRequest.builder().bucket(bucket).key(filename).build()
     val futureResponse = s3Client.getObject(request, AsyncResponseTransformer.toBytes[GetObjectResponse]())
 
-    val result: IO[Option[Array[Byte]]] = for {
-      _ <-  DynamoDBService.updateCount(filename,"download_count")
-      response <- IO.fromCompletableFuture(IO(futureResponse))
-      byteBuffer = response.asByteBuffer()
-      bytes = {
-        val arr = new Array[Byte](byteBuffer.remaining())
-        byteBuffer.get(arr)
-        arr
-      }
-    } yield Some(bytes)
+    val statisticsEffect : IO[UpdateItemResponse] =  DynamoDBService.updateCount(filename,"download_count")
 
-     result.recover { case _ => None }
+    val downloadEffect = IO.fromCompletableFuture(IO(futureResponse)).map { response =>
+      val byteBuffer: ByteBuffer = response.asByteBuffer()
+      val bytes = new Array[Byte](byteBuffer.remaining())
+      byteBuffer.get(bytes)
+      Some(bytes)
+    }.recover { case _ => None }
+
+    (statisticsEffect,downloadEffect).parTupled.map{case (_,a) => a}
   }
 
   override def deleteFile(filename: String): IO[Boolean] = {
@@ -88,10 +90,9 @@ class LiveFileOperationsService extends FileOperationsService {
   }
 
   override def showMetadata(filename: Option[String]): IO[Option[MetadataRecord]] = {
-    for {
-       _ <- DynamoDBService.updateCount(filename.get,"view_count")
-       resp <- IO.fromFuture(IO(dbService.showMetadata(filename)))
-    } yield resp
+    (DynamoDBService.updateCount(filename.get, "view_count"),
+      IO.fromFuture(IO(dbService.showMetadata(filename))))
+      .parTupled.map { case (_, a) => a }
   }
 }
 

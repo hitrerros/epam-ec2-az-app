@@ -58,8 +58,6 @@ object SNSSubscribeService {
           .builder()
           .subscriptionArn(arn)
           .build()
-
-
         IO(snsClient.unsubscribe(request).asScala.value.flatMap(_.toOption))
       case None => IO.none
     }
