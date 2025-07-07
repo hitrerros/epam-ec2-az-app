@@ -17,3 +17,6 @@ Deployment: CI/CD CodePipeline
 ```
  Build with sbt:
  `sbt clean assembly`
+
+  The project's scheme:
+  ![Screenshot](final3.drawio.png)
