@@ -6,7 +6,7 @@ import software.amazon.awssdk.services.lambda.LambdaClient
 import software.amazon.awssdk.services.lambda.model._
 
 import java.nio.charset.StandardCharsets
-import scala.util.{Failure, Success, Try}
+import scala.util.{Failure, Success, Try, Using}
 
 object LambdaInvocationService {
 
@@ -22,11 +22,11 @@ object LambdaInvocationService {
       .payload(payloadBytes)
       .build()
 
-    Try(lambda.invoke(request)) match {
-      case Success(response) =>
-        val responseString = response.payload().asUtf8String()
-        lambda.close()
-        responseString
+    Using(lambda) { lambdaClient =>
+      val response = lambdaClient.invoke(request)
+      response.payload().asUtf8String()
+    } match {
+      case Success(responseString) => responseString
       case Failure(exception) => s"Lambda invocation failed: ${exception}"
     }
   }

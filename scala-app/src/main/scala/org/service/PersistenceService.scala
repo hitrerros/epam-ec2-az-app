@@ -44,7 +44,7 @@ trait PersistenceService {
 
   def showMetadata(filename: Option[String]): Future[Option[MetadataRecord]] = {
     filename match {
-      case Some(v) =>
+      case Some(_) =>
         db.run(metadataTab.filter(_.fileName === filename).result.headOption)
       case None =>
         for {
